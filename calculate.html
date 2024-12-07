@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    <style>
+        body {
+            background-color: gray;
+        }
+
+        #o {
+            width: 300px;
+            height: 42px;
+        }
+
+        button {
+            background-color: gray;
+            color: blue;
+            font-style: italic;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        button:hover {
+            background-color: lightgray;
+            color: darkblue;
+        }
+
+        #equationInput {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<input id="o" type="text" disabled><br>
+<button onclick="x('1')">1</button>
+<button onclick="x('2')">2</button>
+<button onclick="x('3')">3</button>
+<button onclick="x('4')">4</button>
+<button onclick="x('5')">5</button><br>
+<button onclick="x('6')">6</button>
+<button onclick="x('7')">7</button>
+<button onclick="x('8')">8</button>
+<button onclick="x('9')">9</button>
+<button onclick="x('0')">0</button><br>
+<button onclick="x('+')">+</button>
+<button onclick="x('-')">-</button>
+<button onclick="x('*')">x</button>
+<button onclick="x('/')">/</button><br>
+<button onclick="cler()">AC</button>
+<button onclick="calc()">=</button>
+<button onclick="backspace()">&lt;-</button>
+<button onclick="x('3.141592653589793')">π</button><br> <!-- Updated here -->
+<button onclick="insertAns()">ANS</button>
+<button onclick="x('^')">^</button>
+<button onclick="x('(')"> ( </button>
+<button onclick="x(')')"> ) </button>
+
+<div id="equationInput">
+    <input type="text" id="equation" placeholder="Enter equation (e.g., x + 6 = 9)">
+    <button onclick="solveForX()">Solve</button>
+</div>
+
+<script>
+    let o = document.getElementById("o");
+    let lastAnswer = 0;
+
+    // Function to add value to the input display
+    function x(value) {
+        o.value += value;
+    }
+
+    // Clear the display
+    function cler() {
+        o.value = "";
+    }
+
+    // Calculate the expression
+    function calc() {
+        try {
+            let inputField = document.getElementById("o");
+            let expression = inputField.value;
+
+            // Use math.js to evaluate the expression
+            const result = math.evaluate(expression);
+            inputField.value = result;
+            storeAnswer(result);
+        } catch (error) {
+            console.error("Invalid expression:", error);
+            o.value = "Error";
+        }
+    }
+
+    // Function to store the result as the last answer
+    function storeAnswer(result) {
+        lastAnswer = result;
+    }
+
+    // Function to insert the last answer into the display
+    function insertAns() {
+        let inputField = document.getElementById("o");
+        if (lastAnswer !== 0) {
+            inputField.value += lastAnswer;
+        }
+    }
+
+    // Function for backspace (delete last character)
+    function backspace() {
+        o.value = o.value.slice(0, -1);
+    }
+
+    // Function to show the equation input for solving
+    function solveForX() {
+        const equation = document.getElementById("equation").value;
+
+        // Ensure the equation contains 'x' (the unknown variable)
+        if (!equation.includes('x')) {
+            alert('Please include "x" as the unknown variable in your equation.');
+            return;
+        }
+
+        try {
+            // Parse and solve the equation using math.js
+            const expr = math.parse(equation);
+            const solutions = math.solve(expr, 'x');
+
+            // Check if solutions are found
+            if (solutions.length > 0) {
+                o.value = `Solution: ${solutions.join(', ')}`;
+            } else {
+                o.value = "No solution found.";
+            }
+        } catch (error) {
+            console.error("Error solving the equation:", error);
+            o.value = "Invalid Equation";
+        }
+    }
+</script>
+
+</body>
+</html>
